@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Aloha Editor &bull; Postcards</title>
+		<link href="transformer/transformer.css" type="text/css" rel="stylesheet" />
+		<link href='http://fonts.googleapis.com/css?family=Gabriela|Gochi+Hand|Condiment|Mrs+Sheppards|Rum+Raisin|Faster+One' rel='stylesheet' type='text/css'>
+		<style>
+			body, html {
+				padding: 0;
+				margin: 0;
+				display: table;
+				width: 100%;
+				height: 100%;
+				font-family: Gabriela;
+			}
+			* {
+				-moz-box-sizing: border-box;
+				 -ms-box-sizing: border-box;
+				  -o-box-sizing: border-box;
+				     box-sizing: border-box;
+			}
+			.canvas {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 80%;
+				height: 100%;
+				background: #222;
+				box-shadow: inset 0 0 500px rgba(0,0,0,0.9);
+			}
+			.editable {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				color: #fff;
+				font-family: Arial;
+				font-size: 100px;
+				text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+				background-image: url(shot-3.jpg);
+				background-repeat: no-repeat;
+				background-position: center center;
+			}
+			.tools {
+				position: absolute;
+				top: 0;
+				right: 0;
+				width: 20%;
+				height: 100%;
+				padding: 20px 20px 0;
+				background: #fff;
+				box-shadow: inset 5px 5px 10px rgba(0,0,0,0.1);
+				-moz-box-sizing: border-box;
+				 -ms-box-sizing: border-box;
+				  -o-box-sizing: border-box;
+				     box-sizing: border-box;
+			}
+			.tools ul {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+			}
+			.tools li {
+				height: 100px;
+				margin: 20px 0;
+				padding: 20px;
+				background: whitesmoke;
+				box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+				border: 1px solid #e0e0e0;
+			}
+			.tools li:hover {
+				outline: 3px solid #111;
+			}
+			.watermark {
+				position: absolute;
+				right: 20px;
+				bottom: 30px;
+				width: 400px;
+				height: 60px;
+				background: url(watermark-400.png);
+				opacity: 0.7;
+			}
+
+			.box {
+				overflow: hidden;
+				cursor: -webkit-grab;
+				position: absolute;
+				padding: 10px;
+				word-wrap: break-word;
+				-webkit-nbsp-mode: space;
+				-webkit-line-break: after-white-space;
+				line-height: 0.9em;
+				border: 0px solid transparent;
+			}
+			.box.selected,
+			.box.selected.aloha-editable {
+				z-index: 999;
+				outline: 6px solid rgba(0, 168, 219, 0.4) !important;
+			}
+			.box.editing,
+			.box.editing.aloha-editable-active[contenteditable=true]:focus {
+				cursor: text;
+				outline: 6px solid rgba(0, 168, 219, 0.2) !important;
+				-webkit-user-modify: read-write;
+			}
+			.box.vertical-editing {
+				cursor: vertical-text;
+			}
+			.box.moving,
+			.box.rotating {
+				cursor: -webkit-grabbing;
+				opacity: 0.8;
+			}
+			.box p {
+				margin: 0;
+				padding: 0;
+			}
+			.highlight .box {
+				box-shadow: 0 0 30px rgba(0, 168, 219, 0.6);
+			}
+			.creating .editable {
+				cursor: crosshair;
+			}
+
+			.buttons {
+				display: table;
+				width: 100%;
+				margin-bottom: 20px;
+				box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+				border: 1px solid #e0e0e0;
+			}
+			.buttons div {
+				display: table-cell;
+				height: 35px;
+				text-decoration: none;
+				text-align: center;
+				padding: 10px 15px;
+				background: whitesmoke;
+				color: #888;
+				border-right: 1px solid #e0e0e0;
+				cursor: default;
+				font-weight: bold;
+			}
+			.buttons div:hover {
+				outline: 1px solid #ccc;
+				color: #111;
+			}
+			.buttons div.active {
+				outline: 3px solid rgba(0, 168, 219, 0.1);
+			}
+			.buttons .share {
+				background: #c34;
+				color: #fff;
+				border: 0px solid transparent;
+			}
+			.buttons input {
+				width: 100%;
+				border: none;
+				outline: 0px;
+				padding: 10px;
+			}
+			.buttons.swatches div {
+				border: none;
+				outline: none;
+				box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+			}
+			.buttons.swatches div:hover {
+				box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+			}
+			.buttons.swatches div.picked {
+				box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+			}
+			.bg {
+				position: absolute;
+				visibility: hidden;
+			}
+			.fg {
+				position: relative;
+				width: 100%;
+				height: 100%;
+				margin: 100px auto;
+				box-shadow: 5px 5px 100px rgba(0,0,0,1);
+			}
+			.preview {
+				margin-bottom: 15px;
+			}
+			.preview>img {
+				width: 100%;
+				box-shadow: 2px 2px 15px rgba(0,0,0,0.5);
+			}
+		</style>
+	</head>
+	<body>
+		<img src="shot-3.jpg" class="bg" />
+		<div class="canvas">
+			<div class="fg">
+				<div class="editable"></div>
+				<div class="watermark"></div>
+			</div>
+			<div style="margin: 0 auto; width: 300px;center; color: #777;">
+				<b>Usage tips:</b>
+				<ul>
+					<li>One click to select editable</li>
+					<li>Two clicks to toggle rotation</li>
+					<li>Double click in toggle edit mode</li>
+				</ul>
+			</div>
+		</div>
+		<div class="tools">
+			<div class="buttons"><div class="create">Create editables</div></div>
+			<div class="buttons"><div class="show">Show editables</div></div>
+			<div class="buttons"><input type="file"/></div>
+			<div class="buttons swatches colors">
+				<div style="background: #01a79e"></div>
+				<div style="background: #e95555"></div>
+				<div style="background: #f4aa34"></div>
+				<div style="background: #ffffff"></div>
+				<div style="background: #8fcbfb"></div>
+				<div style="background: #f7da3c"></div>
+				<div style="background: #111111"></div>
+			</div>
+			<div class="buttons swatches fonts">
+				<div style="font-family: Gabriela;">A</div>
+				<div style="font-family: Gochi Hand;">A</div>
+				<div style="font-family: Condiment;">A</div>
+				<div style="font-family: Mrs Sheppards;">A</div>
+				<div style="font-family: Arial;">A</div>
+				<div style="font-family: Rum+Raisin;">A</div>
+				<div style="font-family: Faster One;">A</div>
+			</div>
+			<div class="buttons swatches borders">
+				<div style="width: 25%; border: 0px solid #111;"></div>
+				<div style="width: 25%; border: 5px solid #111;"></div>
+				<div style="width: 25%; border: 15px solid #111;"></div>
+				<div style="width: 25%; border: 20px solid #111;"></div>
+			</div>
+			<div class="preview"></div>
+			<div class="buttons"><div class="share">Share this!</div></div>
+		</div>
+		<script src="jquery.js"></script>
+		<script src="transformer/math.js"></script>
+		<script src="transformer/transformer.js"></script>
+		<script src="transformer/app.js"></script>
+		<script src="html2canvas/build/html2canvas.js"></script>
+		<script>
+			window.canvas = $('.editable');
+			window.creating_mode = false;
+			window.onStopOperation = function () {};
+			function poll() {
+				setInterval(function () {
+					html2canvas($('.fg')[0], {
+						useCORS: true,
+						onrendered: function(canvas) {
+							var image = new Image();
+							image.src = canvas.toDataURL('image/png');
+							$('.preview').html('').append(image);
+						}
+					});
+				}, 2000);
+			}
+			$(function () {
+				var show_mode = false;
+				var color = '#ffffff';
+				var font = 'arial';
+				var border = 0;
+				window.onStopOperation = function (operation) {
+					if (operation.create) {
+						window.creating_mode = false;
+						$('.tools .buttons .picked').removeClass('picked');
+						$('.create').removeClass('active');
+						$('body').removeClass('creating');
+						operation.create.$element
+						         .css('color', color)
+						         .css('border-color', color)
+						         .css('border-width', border)
+						         .css('font-family', font);
+					}
+				};
+				$('.tools .buttons .create').on('click', function () {
+					window.creating_mode = !window.creating_mode;
+					if (window.creating_mode) {
+						$(this).addClass('active');
+						$('body').addClass('creating');
+					} else {
+						$(this).removeClass('active');
+						$('body').removeClass('creating');
+					}
+				});
+				$('.tools .buttons .show').on('click', function () {
+					show_mode = !show_mode;
+					if (show_mode) {
+						$(this).addClass('active');
+						$('body').addClass('highlight');
+					} else {
+						$(this).removeClass('active');
+						$('body').removeClass('highlight');
+					}
+				});
+				$('.tools .buttons input').on('change', function () {
+					var src = $(this).val();
+					$('.bg').attr('src', src);
+					$('.editable').css('background-image', 'url(' + src + ')');
+				});
+				$('.tools .colors div').on('click', function () {
+					$('.tools .colors div').removeClass('picked');
+					var color = $(this).addClass('picked').css('background-color');
+					$('.box.selected').css({
+						color: color,
+						'border-color': color
+					});
+				});
+				$('.tools .fonts div').on('click', function () {
+					$('.tools .fonts div').removeClass('picked');
+					$('.box.selected').css('font-family', $(this).addClass('picked').css('font-family'));
+				});
+				$('.tools .borders div').on('click', function () {
+					$('.tools .borders div').removeClass('picked');
+					$('.box.selected').css('border-width', $(this).addClass('picked').css('border-width'));
+				});
+				$('.editable').on('click', '.box', function () {
+					$('.tools .swatches .picked').removeClass('picked');
+					color = $(this).css('color');
+					font = $(this).css('font-family');
+					border = $(this).css('border-width');
+					var swatches = [];
+					$('.tools .colors div').each(function () {
+						if ($(this).css('background-color') === color) {
+							swatches.push(this);
+							return false;
+						}
+					});
+					$('.tools .fonts div').each(function () {
+						if ($(this).css('font-family') === font) {
+							swatches.push(this);
+							return false;
+						}
+					});
+					$('.tools .borders div').each(function () {
+						if ($(this).css('border-width') === border) {
+							swatches.push(this);
+							return false;
+						}
+					});
+					$(swatches).addClass('picked');
+				});
+
+				var $bg = $('.bg');
+				function updateBg() {
+					$('.fg').width($bg.width()).height($bg.height());
+				}
+				updateBg();
+				$bg.on('load', updateBg);
+				poll();
+			});
+		</script>
+	</body>
+</html>

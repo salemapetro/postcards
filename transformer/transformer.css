@@ -1,0 +1,74 @@
+.transformer-marker {
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 1px;
+	height: 1px;
+	z-index: 9999;
+	/* cursor: crosshair; */
+	cursor: pointer;
+	border-radius: 8px;
+	opacity: 0.8;
+}
+.transformer-marker>div {
+	position: relative;
+	width: 6px;
+	height: 6px;
+	background: #fff;
+	border: 1px solid rgba(0, 168, 219, 0.5);
+	border-radius: 8px;
+}
+#transformer-marker-nw>div {
+	background: red;
+	top: -4px;
+	left: -4px;
+}
+#transformer-marker-sw>div {
+	background: blue;
+	bottom: 3px;
+	left: -4px;
+}
+#transformer-marker-ne>div {
+	background: green;
+	top: -4px;
+	right: 3px;
+}
+#transformer-marker-se>div {
+	background: yellow;
+	bottom: 3px;
+	right: 3px;
+}
+#transformer-marker-n>div{
+	top: -5px;
+	left: -3px;
+}
+#transformer-marker-s>div{
+	bottom: 3px;
+	left: -3px;
+}
+#transformer-marker-w>div{
+	top: -3px;
+	left: -5px;
+}
+#transformer-marker-e>div{
+	top: -3px;
+	right: 3px;
+}
+#transformer-pivot {
+	position: absolute;
+	background: rgba(255, 255, 255, 0.8);
+	border: 1px solid rgba(0, 168, 219, 0.5);
+	border-radius: 3px;
+	width: 6px;
+	height: 6px;
+}
+#transformer-boundingbox {
+	position: absolute;
+	outline: 4px solid rgba(0, 168, 219, 0.1);
+}
+
+#transformer-marker-sw,
+#transformer-marker-nw,
+#transformer-marker-se,
+#transformer-marker-ne { display: none !important; }
