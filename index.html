@@ -212,7 +212,11 @@
 		<div class="tools">
 			<div class="buttons"><div class="create">Create editable</div></div>
 			<div class="buttons"><div class="show">Show editables</div></div>
-			<div class="buttons"><input type="file"/></div>
+			<div class="buttons">
+				<form id="importform" action="scripts/import.php" method="post" enctype="multipart/form-data">
+					<input type="file" name="userimage"/>
+				</form>
+			</div>
 			<div class="buttons swatches colors">
 				<div style="background: #01a79e"></div>
 				<div style="background: #e95555"></div>
@@ -352,15 +356,39 @@
 
 				// Import image
 				$('.tools .buttons input').on('change', function () {
-					var src = $(this).val();
-					$('.bg').attr('src', src);
-					$('.editable').css('background-image', 'url(' + src + ')');
+
+					var importData = new FormData($('#importform')[0]);
+
+					$.ajax({
+		                type: "POST",
+		                url: "scripts/import.php",  
+		                data: importData,  
+		                success: function( data )  
+		                {
+							$('.bg').attr('src', data);
+							$('.editable').css('background-image', 'url(' + data + ')');
+		                },
+		                cache: false,
+        				contentType: false,
+        				processData: false
+           			});
 				});
 
 				// Export image
 				$('.tools .buttons .save').on('click', function () {
 					var data = $('.preview>img').attr('src');
 					console.warn(data);
+
+					$.ajax({
+					    type: "POST",
+					    url: "scripts/export.php",
+					    data: {img: data},
+					    contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+					    success: function(data){
+					    	window.location.href = data;
+					    }
+					});
+
 				});
 			});
 		</script>
