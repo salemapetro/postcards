@@ -39,7 +39,7 @@
 				font-family: Arial;
 				font-size: 100px;
 				text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-				background-image: url(shot-3.jpg);
+				background-image: url(input/shot-3.jpg);
 				background-repeat: no-repeat;
 				background-position: center center;
 			}
@@ -150,7 +150,7 @@
 			.buttons div.active {
 				outline: 3px solid rgba(0, 168, 219, 0.1);
 			}
-			.buttons .share {
+			.buttons .save {
 				background: #c34;
 				color: #fff;
 				border: 0px solid transparent;
@@ -193,7 +193,7 @@
 		</style>
 	</head>
 	<body>
-		<img src="shot-3.jpg" class="bg" />
+		<img src="input/shot-3.jpg" class="bg" />
 		<div class="canvas">
 			<div class="fg">
 				<div class="editable"></div>
@@ -238,7 +238,7 @@
 				<div style="width: 25%; border: 20px solid #111;"></div>
 			</div>
 			<div class="preview"></div>
-			<div class="buttons"><div class="share">Share this!</div></div>
+			<div class="buttons"><div class="save">Save this!</div></div>
 		</div>
 		<script src="jquery.js"></script>
 		<script src="transformer/math.js"></script>
@@ -255,7 +255,7 @@
 						useCORS: true,
 						onrendered: function(canvas) {
 							var image = new Image();
-							image.src = canvas.toDataURL('image/png');
+							image.src = canvas.toDataURL('image/jpeg');
 							$('.preview').html('').append(image);
 						}
 					});
@@ -298,11 +298,6 @@
 						$(this).removeClass('active');
 						$('body').removeClass('highlight');
 					}
-				});
-				$('.tools .buttons input').on('change', function () {
-					var src = $(this).val();
-					$('.bg').attr('src', src);
-					$('.editable').css('background-image', 'url(' + src + ')');
 				});
 				$('.tools .colors div').on('click', function () {
 					$('.tools .colors div').removeClass('picked');
@@ -354,6 +349,19 @@
 				updateBg();
 				$bg.on('load', updateBg);
 				poll();
+
+				// Import image
+				$('.tools .buttons input').on('change', function () {
+					var src = $(this).val();
+					$('.bg').attr('src', src);
+					$('.editable').css('background-image', 'url(' + src + ')');
+				});
+
+				// Export image
+				$('.tools .buttons .save').on('click', function () {
+					var data = $('.preview>img').attr('src');
+					console.warn(data);
+				});
 			});
 		</script>
 	</body>
