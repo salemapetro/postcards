@@ -103,7 +103,7 @@
 			.box.editing.aloha-editable-active[contenteditable=true]:focus {
 				cursor: text;
 				outline: 6px solid rgba(0, 168, 219, 0.2) !important;
-				-webkit-user-modify: read-write;
+				/*-webkit-user-modify: read-write;*/
 			}
 			.box.vertical-editing {
 				cursor: vertical-text;
@@ -249,6 +249,14 @@
 		<script src="transformer/transformer.js"></script>
 		<script src="transformer/app.js"></script>
 		<script src="html2canvas/build/html2canvas.js"></script>
+		<script src="alohaeditor/src/require-pronto.js"></script>
+		<script src="alohaeditor/src/require-pronto.dev.js"></script>
+		<script>
+			window.aloha = null;
+			require(['alohaeditor/src/aloha'], function (aloha) {
+				window.aloha = aloha;
+			});
+		</script>
 		<script>
 			window.canvas = $('.editable');
 			window.creating_mode = false;

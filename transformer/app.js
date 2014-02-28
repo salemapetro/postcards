@@ -10,6 +10,9 @@
 	var mode = 'move';
 
 	function clear_element($element) {
+		if (window.aloha && $element.length > 0) {
+			window.aloha.mahalo($element[0]);
+		}
 		return $element.css('cursor', '')
 					   .removeClass('moving')
 					   .removeClass('editing')
@@ -35,6 +38,9 @@
 			return Transformer.style_markers('circles');
 		case 'edit':
 			$element.addClass('editing');
+			if (window.aloha && $element.length > 0) {
+				window.aloha($element[0]);
+			}
 			var angle = Transformer.get_element_rotation($element);
 			var direction = Transformer.get_compass_direction('n', angle);
 			if ('w' === direction || 'e' === direction) {
